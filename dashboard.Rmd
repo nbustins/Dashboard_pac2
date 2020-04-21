@@ -1,0 +1,54 @@
+---
+title: "Referències als infants en els acords de pau"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r}
+# Utilitzarem ggplot2 per explorar les dades
+library(ggplot2)
+data <- read.csv('./Data/pax_data_1832_agreements_16-04-20.csv',stringsAsFactors = TRUE)
+```
+
+```{r}
+data$GCh=as.factor(data$GCh)
+levels(data$GCh) <- c("Cap menció", "Una menció", "Algunes mencions", "Fortes mencions")
+```
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Percentatge de mencions als infants en els documents de pau arreu del món
+
+```{r}
+t <- table(data$GCh)
+df <- data.frame(t)
+colnames(df) <- c("Grup","Percentatge")
+
+bp<- ggplot(df, aes(x="Percentatge", y=Percentatge, fill=Grup))+
+geom_bar(width = 1, stat = "identity",position = "fill") 
+pie <- bp + coord_polar("y", start=0)   + labs(x = "", y = "") + theme(panel.background = element_rect(fill = 'white', colour = 'White'))
+pie
+```
+
+Column {data-width=450}
+-----------------------------------------------------------------------
+
+### Mencions als infants segons la regió.
+
+```{r}
+ggplot(data = data, aes(x = Reg, fill = GCh)) + geom_bar(position = "fill") + coord_flip() + theme(legend.position = "none",panel.background = element_rect(fill = 'white', colour = 'white')) + labs(x = "Regió", y = "Percentatge")
+```
+
+### Longitud dels documents (en caràcters) segons les mencions als infants
+
+```{r}
+ggplot(data) + geom_density( aes(x = N_characters, fill =GCh )) + facet_wrap(~GCh) + labs(x = "Nombre de caràcters",y = "Densitat") + theme(legend.position = "none") 
+```
+
